@@ -33,8 +33,7 @@ Elle garantit ainsi une correspondance fidèle entre le design numérique et l�
 
 - Représentation aux dimensions réelles (mm)
 - Conversion pixels ↔ millimètres
-- Origine située en bas à gauche
-- Gestion d’une grille optionnelle
+- Origine située en haut à gauche
 
 ---
 
