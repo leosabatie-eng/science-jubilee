@@ -10,7 +10,7 @@ MM_TO_PIX = 3
 #dimension plateau
 PLATEAU_W_MM = 305
 PLATEAU_H_MM = 305
-DIAMETRE_TROU = 5 # mm (M5)
+DIAMETRE_TROU = 3 # mm (M3)
 OFFSET_TROU_BAS_X = 15.39 # distance des trous du bas en x
 OFFSET_TROU_BAS_y = 5 # distance des trous du bas en y//
 OFFSET_TROU_HAUT_X = 5 # distance des trous du haut en x//
@@ -675,3 +675,4 @@ canvas.bind("<Configure>", draw_grid)
 
 # ---------- START APP ----------
 app.mainloop()
+
