@@ -1,21 +1,15 @@
 {
     "name": "Experience1",
-    "description": "Simulation de l'éclairage + prise de photos",
     "type": "SLAS",
     "deck_offset": [
         0.0,
         0.0
     ],
-    "material": {
-        "deck": "Plastic",
-        "mask": ""
-    },
-    "slot_reference_corner": "bottom_left",
     "slots": {
         "0": {
             "coordinates": [
-                76.17,
-                247.33
+                78.0,
+                210.0
             ],
             "shape": "rectangle",
             "width": 127.76,
@@ -25,8 +19,8 @@
         },
         "1": {
             "coordinates": [
-                36.17,
-                28.67
+                232.67,
+                247.33
             ],
             "shape": "rectangle",
             "width": 50.0,
@@ -36,14 +30,25 @@
         },
         "2": {
             "coordinates": [
-                147.83,
-                140.0
+                139.67,
+                137.67
             ],
             "shape": "rectangle",
             "width": 30.0,
             "length": 30.0,
             "has_labware": true,
             "labware": "pot_de_lentille.json"
+        },
+        "3": {
+            "coordinates": [
+                178.67,
+                74.67
+            ],
+            "shape": "rectangle",
+            "width": 127.76,
+            "length": 85.48,
+            "has_labware": true,
+            "labware": "greiner_24_wellplate_3300ul_orth.json"
         }
     },
     "tool_slots": {}
