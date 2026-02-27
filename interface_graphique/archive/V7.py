@@ -410,7 +410,7 @@ def export_to_dxf(json_file="test1.json"):
             if p["x_min_zone"] <= tx <= p["x_max_zone"]:
                 msp.add_circle(center=(tx, ty), radius=r, dxfattribs={"layer": "fixation_holes"})
 
-        # 3) LABWARES
+        # 3) LABWARES AVEC COUPE INTELLIGENTE
         slots = data.get("slots", {})
         for slot in slots.values():
             if not slot.get("has_labware", False): continue
@@ -418,18 +418,25 @@ def export_to_dxf(json_file="test1.json"):
             cx, cy = slot["coordinates"]
             w, h = slot.get("width", 0), slot.get("length", 0)
             
-            # Coordonnées réelles du labware
             lx1, lx2 = cx - w/2, cx + w/2
             ly1, ly2 = cy - h/2, cy + h/2
 
-            # (Si le bord droit du labware > début zone ET bord gauche < fin zone)
             if lx2 >= p["x_min_zone"] and lx1 <= p["x_max_zone"]:
-               
-                draw_x1 = max(lx1, p["x_min_zone"])
-                draw_x2 = min(lx2, p["x_max_zone"])
+                # On calcule les bords brut de la zone de l'objet dans cette partie
+                cut_x1 = max(lx1, p["x_min_zone"])
+                cut_x2 = min(lx2, p["x_max_zone"])
                 
-                # On ajoute une marge de 0.5mm pour le jeu comme dans votre code
-                draw_rectangle(draw_x1 - 0.5, ly1 - 0.5, draw_x2 + 0.5, ly2 + 0.5, layer="labware")
+                # LOGIQUE DE MARGE :
+                # Si le bord est sur le milieu_x, on ne rajoute pas 0.5
+                # Sinon on rajoute 0.5 pour le jeu
+                
+                final_x1 = cut_x1 if cut_x1 == milieu_x else cut_x1 - 0.5
+                final_x2 = cut_x2 if cut_x2 == milieu_x else cut_x2 + 0.5
+                
+                # Dessin du rectangle (le jeu en Y reste de 0.5 partout)
+                draw_rectangle(final_x1-0.5, ly1 - 0.5, final_x2+0.5, ly2 + 0.5, layer="labware")
+                draw_rectangle(final_x1, ly1 -90, final_x2, ly2 -90, layer="labware")
+                draw_rectangle(final_x1-0.5+80, ly1 - 0.5, final_x2+0.5+80, ly2 + 0.5, layer="labware")
 
         doc.saveas(p["name"])
         print(f"Fichier généré : {p['name']}")

@@ -8,8 +8,8 @@
     "slots": {
         "0": {
             "coordinates": [
-                78.0,
-                210.0
+                13.12,
+                10.26
             ],
             "shape": "rectangle",
             "width": 127.76,
@@ -19,30 +19,8 @@
         },
         "1": {
             "coordinates": [
-                232.67,
-                247.33
-            ],
-            "shape": "rectangle",
-            "width": 50.0,
-            "length": 30.0,
-            "has_labware": true,
-            "labware": "pot_de_d'eau.json"
-        },
-        "2": {
-            "coordinates": [
-                139.67,
-                137.67
-            ],
-            "shape": "rectangle",
-            "width": 30.0,
-            "length": 30.0,
-            "has_labware": true,
-            "labware": "pot_de_lentille.json"
-        },
-        "3": {
-            "coordinates": [
-                178.67,
-                74.67
+                100.79,
+                208.93
             ],
             "shape": "rectangle",
             "width": 127.76,

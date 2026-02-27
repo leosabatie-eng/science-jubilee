@@ -72,9 +72,9 @@ class App(ctk.CTk):
     def setup_tool_slots(self):
         for slot_id, pos in OUTIL_SLOTS.items():
             tag = f"outil_{slot_id}"
-            rect = self.canvas.create_rectangle(pos["x"], pos["y"], pos["x"] + 60, pos["y"] + 90, 
+            rect = self.canvas.create_rectangle(pos["x"] + 1200, pos["y"], pos["x"] + 1260, pos["y"] + 90, 
                                                 fill="#dddddd", outline="#888", width=2, tags=(tag, "slot_outil_rect"))
-            txt = self.canvas.create_text(pos["x"] + 30, pos["y"] + 25, text="None", fill="black", 
+            txt = self.canvas.create_text(pos["x"] + 1230, pos["y"] + 25, text="None", fill="black", 
                                           font=("Arial", 10, "bold"), tags=(f"slot_text_{slot_id}", "slot_outil_text"))
             
             self.slot_rects[slot_id] = rect
@@ -117,17 +117,14 @@ class App(ctk.CTk):
         x = event.x - w_px/2
         y = event.y - h_px/2
 
-        # 2. Check 1: Est-ce que c'est dans le plateau ?
         if not self.is_inside_plateau(x, y, w_px, h_px):
             print("Placement impossible : Hors des limites du plateau.")
             return 
-
-        # 3. Check 2: Est-ce que l'espace est libre ?
+        
         if not self.is_free_space(x, y, w_px, h_px):
             print("Placement impossible : Espace déjà occupé.")
             return 
 
-        # 4. Création de l'objet (Remplace create_placed_item)
         color = "#1f6aa5" if "Plaque" in self.selected_tool_name else ("#2e7d32" if "eau" in self.selected_tool_name.lower() else "#c2185b")
         
         obj = DraggableObject(
