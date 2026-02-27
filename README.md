@@ -44,6 +44,9 @@ src/
         └── Labware.py           # base labware class
 ```
 
+<img width="5854" height="7961" alt="Schéma_dépendance_code" src="https://github.com/user-attachments/assets/fef08f7e-1248-43a9-9694-eee2bfc975e4" />
+
+
 ### Labware and Wetware
 The basic functionality supported by this software is intended to be used with a custom deck which accommodates up to 6 standard sized microplates.
 
