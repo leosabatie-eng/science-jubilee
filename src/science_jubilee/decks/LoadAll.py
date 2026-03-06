@@ -55,7 +55,6 @@ def load_all(jm: JubileeManager, deck_filename: str, path: Optional[str] = None)
 
         tool = Tool(index=index, name=tool_name)
         jm.load_tool(tool, index)
-        offset
         jm.set_tool_offset(0, (0, -43.5,0))
 
     slots_cfg = deck_config.get("slots")

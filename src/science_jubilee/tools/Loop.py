@@ -97,7 +97,7 @@ class Loop(Tool):
                 ys += ry
             xd, yd, zd = self._get_xyz(well=destination_well)
 
-            self._machine.safe_z_movement()
+            #self._machine.safe_z_movement()
             self._machine.move_to(x=xs, y=ys)
             self._machine.move_to(z=zs + 5)
             # slowly sweep in the reservoir to pick up duckweed
@@ -108,7 +108,7 @@ class Loop(Tool):
             self.current_well = source_well
             # self._aspirate(vol, s=s)
 
-            self._machine.safe_z_movement()
+            #self._machine.safe_z_movement()
             self._machine.move_to(x=xd, y=yd)
             self._machine.move_to(z=zd + 5)
             # sweep again to drop off duckweed
