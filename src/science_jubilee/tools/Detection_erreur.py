@@ -74,7 +74,12 @@ class Detection_erreur:
     
         #on parcours l'image binaire et on compte les pixels blancs pour détecter les différences significatives
         total_white_pixels = np.sum(diff_thresh == 255)
+        print(f"Nombre de pixels blancs détectés : {total_white_pixels}")
         if total_white_pixels < 10:
             print(f"Erreur détectée : l'action doit être relancé la lentille n'est pas présente")
+            return False
+        if total_white_pixels > 100:
+            print(f"Erreur détectée : plus d'une lentille est présente")
         else:
             print("Aucune erreur détectée")
+        return True
