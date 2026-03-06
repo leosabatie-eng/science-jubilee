@@ -63,8 +63,6 @@ def load_all(jm: JubileeManager, deck_filename: str, path: Optional[str] = None)
         raise ToolConfigurationError(
             "'slots' must be defined as a dictionary in deck JSON"
         )
-
-    labware = []
     
     for slot_index_str, slot_data in slots_cfg.items():
         try:
