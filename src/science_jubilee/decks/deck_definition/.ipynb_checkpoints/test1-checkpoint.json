@@ -8,8 +8,8 @@
     "slots": {
         "0": {
             "coordinates": [
-                148.12,
-                83.59
+                142.57,
+                108.0
             ],
             "shape": "rectangle",
             "width": 127.76,
@@ -19,6 +19,7 @@
         }
     },
     "tool_slots": {
-        "0": "Inoculator"
+        "0": "Inoculator",
+        "1": "Inoculator"
     }
 }
