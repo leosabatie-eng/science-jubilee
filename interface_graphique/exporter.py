@@ -17,8 +17,8 @@ def export_layout(placed_objects, slot_assignments, canvas, canvas_plateau, file
 
     for idx, obj in enumerate(placed_objects):
         x1, y1, x2, y2 = canvas.coords(obj.id)
-        x_mm = (x1 - x0_px) * scale_x
-        y_mm = (y1 - y0_px) * scale_y
+        y_mm = (x1 - x0_px) * scale_x
+        x_mm = (y1 - y0_px) * scale_y
         
         # Calcul des dimensions
         w_mm = (x2 - x1) * scale_x
