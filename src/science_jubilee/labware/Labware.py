@@ -49,7 +49,7 @@ class Well:
     def x(self, new_x):
         """Setter for the offsetted x-position of each well with respect to the deck-slot coordinates
 
-        :param new_x: the new y-coordinate of the well
+        :param new_x: the new x-coordinate of the well
         :type new_x: float
         """
         self._x = new_x
