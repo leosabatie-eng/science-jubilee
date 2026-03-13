@@ -8,8 +8,8 @@
     "slots": {
         "0": {
             "coordinates": [
-                31.12,
-                32.93
+                209.26,
+                11.12
             ],
             "shape": "rectangle",
             "width": 127.76,
@@ -18,7 +18,5 @@
             "labware": "greiner_24_wellplate_3300ul_orth.json"
         }
     },
-    "tool_slots": {
-        "0": "Inoculator"
-    }
+    "tool_slots": {}
 }
