@@ -36,7 +36,7 @@ class App(ctk.CTk):
         self.lbl_selected.pack(pady=(12, 8))
 
         # Boutons des outils labware
-        for tname in TOOLS.keys():
+        for tname in LABWARE.keys():
             ctk.CTkButton(self.sidebar, text=tname, 
                           command=lambda n=tname: self.select_tool(n)).pack(fill="x", pady=4)
 
@@ -108,8 +108,8 @@ class App(ctk.CTk):
             return
 
         # 1. Conversion mm → pixels
-        w_mm = TOOLS[self.selected_tool_name]["w_mm"]
-        h_mm = TOOLS[self.selected_tool_name]["h_mm"]
+        w_mm = LABWARE[self.selected_tool_name]["w_mm"]
+        h_mm = LABWARE[self.selected_tool_name]["h_mm"]
         w_px = w_mm * MM_TO_PIX
         h_px = h_mm * MM_TO_PIX
 
@@ -218,7 +218,7 @@ class App(ctk.CTk):
             y_px = bl_y - (s["coordinates"][1] * scale) - (s["length"] * scale / 2)
             
             # Retrouver le nom via le JSON
-            name = next((k for k, v in TOOLS.items() if v["json"] == s["labware"]), "Labware")
+            name = next((k for k, v in LABWARE.items() if v["json"] == s["labware"]), "Labware")
             obj = DraggableObject(self.canvas, x_px, y_px, s["width"]*scale, s["length"]*scale, "#1f6aa5", name, self.is_free_space, self.is_inside_plateau)
             self.placed_objects.append(obj)
 

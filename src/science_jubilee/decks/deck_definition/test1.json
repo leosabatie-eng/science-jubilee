@@ -8,14 +8,25 @@
     "slots": {
         "0": {
             "coordinates": [
-                11.45,
-                209.26
+                10.59,
+                10.45
             ],
             "shape": "rectangle",
             "width": 127.76,
             "length": 85.48,
             "has_labware": true,
             "labware": "greiner_24_wellplate_3300ul_orth.json"
+        },
+        "1": {
+            "coordinates": [
+                10.67,
+                215.0
+            ],
+            "shape": "rectangle",
+            "width": 80.0,
+            "length": 80.0,
+            "has_labware": true,
+            "labware": "agilent_1_reservoir_290ml.json"
         }
     },
     "tool_slots": {

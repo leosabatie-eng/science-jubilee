@@ -28,7 +28,7 @@ def export_layout(placed_objects, slot_assignments, canvas, canvas_plateau, file
         data["slots"][str(idx)] = {
             "coordinates": [round(x_mm, 2), round(y_mm, 2)],
             "shape": "rectangle", "width": round(w_mm, 2), "length": round(h_mm, 2),
-            "has_labware": True, "labware": TOOLS[obj.name]["json"] if obj.name in TOOLS else None
+            "has_labware": True, "labware": LABWARE[obj.name]["json"] if obj.name in LABWARE else None
         }
 
     for slot_id, tool in slot_assignments.items():
