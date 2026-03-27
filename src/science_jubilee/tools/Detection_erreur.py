@@ -11,10 +11,7 @@ class Detection_erreur:
     # nom de fichier par défaut
         if output_file is None:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            if etat == "avant":
-                output_file = f"avant.jpg"
-            else :
-                output_file = f"après.jpg"
+            output_file = f"apres.jpg"
         try:
             print("Connexion à OctoPi...")
             response = requests.get(url, timeout=5)
@@ -27,59 +24,94 @@ class Detection_erreur:
                 print(f"Erreur : statut HTTP {response.status_code}")
         except requests.exceptions.RequestException as e:
             print(f"Erreur de connexion : {e}")
-    
-    def preprocess(img):
-    # Conversion en Lab (plus stable à la lumière)
-        lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
-        L, A, B = cv2.split(lab)
-    
-        # Normalisation du canal L pour réduire l'effet des reflets
-        L = cv2.equalizeHist(L)
-    
-        lab = cv2.merge([L, A, B])
-        img_norm = cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
-    
-        # Flou léger pour lisser les reflets résiduels
-        img_blur = cv2.GaussianBlur(img_norm, (5, 5), 0)
-        
-        return img_blur
-    
-    
-    def extract_center_square(img, radius=100):
-        h, w = img.shape[:2]
-        cx, cy = w // 2, h // 2
-        return img[cy-radius:cy+radius, cx-radius:cx+radius]
-        
-    def detect_diff(test = "test"):
-        img1 = cv2.imread("avant.jpg")
-        img2 = cv2.imread("après.jpg")
 
-        #On extrait la zone centrale de chaque image pour se concentrer sur la lentille
-        #img1 = self.extract_center_square(img1)
-        #img2 = self.extract_center_square(img2)
+
+    
+    def detect_lens():
+
+        img = cv2.imread("apres.jpg")
+        if img is None:
+            raise ValueError("Image non chargée")
         
+        # =========================
+        # DETECTION DU PUIT CENTRAL
+        # =========================
+
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+        # Amélioration du contraste local (très efficace ici)
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+        gray = clahe.apply(gray)
+
+        # Réduction du bruit tout en gardant les bords
+        gray = cv2.bilateralFilter(gray, 9, 75, 75)
+
+        # Détection de contours
+        edges = cv2.Canny(gray, 50, 150)
+
+        # HoughCircles pour détecter les cercles (puits),  paramètres adaptés pour une autre de caméra de Z = 90
+        circles = cv2.HoughCircles(edges, cv2.HOUGH_GRADIENT, dp=1, minDist=100, param1=50, param2=50, minRadius=30, maxRadius=200)
+
+        #on identifie le cercle le plus au centre de l'image
+        if circles is not None:
+            circles = np.round(circles[0, :]).astype("int")
+            img_center = (img.shape[1] // 2, img.shape[0] // 2)
+            closest_circle = min(circles, key=lambda c: np.linalg.norm((c[0] - img_center[0], c[1] - img_center[1])))
+            x, y, r = closest_circle
+            cv2.circle(img, (x, y), r, (255, 0, 0), 2)
+            cv2.circle(img, (x, y), 2, (255, 0, 0), 3)
+        
+
+        # =========================
+        # MASQUE DE RECHERCHE - ZONE INTERIEURE DU PUIT CENTRAL
+        # ========================= 
     
-        img1 = Detection_erreur.preprocess(img1)
-        img2 = Detection_erreur.preprocess(img2)
-    
-        # Différence absolue
-        diff = cv2.absdiff(img2, img1)
-    
-        # Carte de différence en niveaux de gris
-        diff_gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
-    
-        # Binarisation pour mettre en évidence les différences significatives
-        _, diff_thresh = cv2.threshold(diff_gray, 25, 255, cv2.THRESH_BINARY)
-    
-    
-        #on parcours l'image binaire et on compte les pixels blancs pour détecter les différences significatives
-        total_white_pixels = np.sum(diff_thresh == 255)
-        print(f"Nombre de pixels blancs détectés : {total_white_pixels}")
-        if total_white_pixels < 10:
-            print(f"Erreur détectée : l'action doit être relancé la lentille n'est pas présente")
-            return False
-        if total_white_pixels > 100:
-            print(f"Erreur détectée : plus d'une lentille est présente")
+        mask = np.zeros_like(gray)
+        if circles is not None:
+            cv2.circle(mask, (x, y), r-5, 255, -1)  # masque légèrement plus petit que le cercle détecté
+        masked_img = cv2.bitwise_and(img, img, mask=mask)
+        
+        # =========================
+        # DETECTION DU VERT (ROBUSTE REFLETS)
+        # =========================
+        hsv = cv2.cvtColor(masked_img, cv2.COLOR_BGR2HSV)
+
+        # seuil resserré (important avec reflets)
+        lower_green = np.array([40, 80, 80])
+        upper_green = np.array([85, 255, 255])
+
+        green_mask = cv2.inRange(hsv, lower_green, upper_green)
+
+        # nettoyage agressif pour éliminer les reflets et le bruit
+        kernel = np.ones((7, 7), np.uint8)
+        green_mask = cv2.morphologyEx(green_mask, cv2.MORPH_OPEN, kernel)
+        green_mask = cv2.morphologyEx(green_mask, cv2.MORPH_CLOSE, kernel)
+
+
+        # =========================
+        # DETECTION LENTILLE
+        # =========================
+        contours, _ = cv2.findContours(green_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        lens_found = False
+
+        for cnt in contours:
+            area = cv2.contourArea(cnt)
+            if area > 10:  # seuil de surface à ajuster selon ton image
+                lens_found = True
+                x, y, w, h = cv2.boundingRect(cnt)
+                cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        # =========================
+        # RESULTAT
+        # =========================
+        
+        cv2.waitKey(0)
+
+        if lens_found:
+            print("✅ Lentille détectée")
+            return True
         else:
-            print("Aucune erreur détectée")
-        return True
+            print("❌ Pas de lentille dans ton image")
+            return False
+        
+    detect_lens()
