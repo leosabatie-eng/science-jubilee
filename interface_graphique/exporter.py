@@ -233,7 +233,7 @@ def json_to_gcode(json_file, gcode_file, z_up=30.0, z_down=27.0, feedrate=2000):
             g.write(f"G1 X{x:.3f} Y{y:.3f}\n")
         g.write(f"G1 Z{z_up} F600\n\n")
 
-        # --- 2) TROUS DE FIXATION (CERCLES) ---
+        # --- 2) TROUS DE FIXATION (CERCLES) --
         g.write("; --- Trous de Fixation ---\n")
         r_hole = DIAMETRE_TROU / 2
         trous_pos = [
