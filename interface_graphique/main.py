@@ -45,6 +45,7 @@ class App(ctk.CTk):
         ctk.CTkButton(self.sidebar, text="Exporter JSON", command=self.save_json, fg_color="#1976d2").pack(fill="x", pady=4)
         ctk.CTkButton(self.sidebar, text="Charger JSON", command=self.load_json).pack(fill="x", pady=4)
         ctk.CTkButton(self.sidebar, text="Plan Lazer Cut", command=lambda: exporter.export_to_dxf()).pack(fill="x", pady=4)
+        ctk.CTkButton(self.sidebar, text="Plan gcode stylo", command=lambda: exporter.json_to_gcode("test1.json", "mon_plateau.gcode")).pack(fill="x", pady=4)
         ctk.CTkButton(self.sidebar, text="Vider plateau", command=self.clear_canvas, fg_color="#c62828").pack(fill="x", pady=4)
 
         ctk.CTkLabel(self.sidebar, text="Raccourcis:\n- Clic gauche: placer/déplacer\n- Clic droit: rotation 90°\n- Suppr: supprimer sous curseur",
