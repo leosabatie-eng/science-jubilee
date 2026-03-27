@@ -202,7 +202,7 @@ def export_to_dxf(json_file="test1.json"):
 
 
 #tracer plan avec stylo
-def json_to_gcode(json_file, gcode_file, z_up=3.0, z_down=0.0, feedrate=2000):
+def json_to_gcode(json_file, gcode_file, z_up=30.0, z_down=27.0, feedrate=2000):
     try:
         with open(json_file, "r", encoding="utf-8") as f:
             data = json.load(f)
@@ -217,12 +217,14 @@ def json_to_gcode(json_file, gcode_file, z_up=3.0, z_down=0.0, feedrate=2000):
         g.write("G90 ; Positionnement absolu\n")
         g.write("G28 ; Home\n")
         g.write(f"G0 Z{z_up} F600 ; Lever le stylo\n\n")
-
+#Z=26 limite pour ecrire
         # --- 1) DESSIN DU CONTOUR (PLATEAU) ---
         # On dessine le rectangle extérieur
-        points_contour = [
-            (0, 0), (PLATEAU_W_MM, 0), 
-            (PLATEAU_W_MM, PLATEAU_H_MM), (0, PLATEAU_H_MM), (0, 0)
+        x_0_0 = -4
+        y_0_0 = -43.5
+        points_contour = [#coin 0,0 -> -4;-43.5
+            (x_0_0, y_0_0), (PLATEAU_W_MM + x_0_0, y_0_0), 
+            (PLATEAU_W_MM + x_0_0, PLATEAU_H_MM + y_0_0), (x_0_0, PLATEAU_H_MM + y_0_0), (x_0_0, y_0_0)
         ]
         g.write("; --- Contour Plateau ---\n")
         g.write(f"G0 X{points_contour[0][0]} Y{points_contour[0][1]} F{feedrate}\n")
@@ -235,10 +237,10 @@ def json_to_gcode(json_file, gcode_file, z_up=3.0, z_down=0.0, feedrate=2000):
         g.write("; --- Trous de Fixation ---\n")
         r_hole = DIAMETRE_TROU / 2
         trous_pos = [
-            (-OFFSET_TROU_LEFT_X, OFFSET_TROU_LEFT_Y),
-            (-OFFSET_TROU_LEFT_X, PLATEAU_H_MM - OFFSET_TROU_LEFT_Y),
-            (PLATEAU_W_MM + OFFSET_TROU_RIGHT_X, OFFSET_TROU_RIGHT_Y),
-            (PLATEAU_W_MM + OFFSET_TROU_RIGHT_X, PLATEAU_H_MM - OFFSET_TROU_RIGHT_Y)
+            (OFFSET_TROU_LEFT_Y + x_0_0, -OFFSET_TROU_LEFT_X + y_0_0),
+            (PLATEAU_H_MM - OFFSET_TROU_LEFT_Y + x_0_0, - OFFSET_TROU_LEFT_X + y_0_0),
+            (PLATEAU_W_MM - OFFSET_TROU_RIGHT_Y + x_0_0, PLATEAU_H_MM + OFFSET_TROU_RIGHT_X + y_0_0),
+            (OFFSET_TROU_RIGHT_Y + x_0_0, PLATEAU_H_MM + OFFSET_TROU_RIGHT_X + y_0_0)
         ]
         
         for tx, ty in trous_pos:
@@ -256,7 +258,6 @@ def json_to_gcode(json_file, gcode_file, z_up=3.0, z_down=0.0, feedrate=2000):
         # --- 3) LABWARES (RECTANGLES) ---
         g.write("; --- Labwares ---\n")
         slots = data.get("slots", {})
-        jeu = 0.25
         
         for slot in slots.values():
             if not slot.get("has_labware", False): continue
@@ -265,10 +266,10 @@ def json_to_gcode(json_file, gcode_file, z_up=3.0, z_down=0.0, feedrate=2000):
             w, h = slot.get("width", 0), slot.get("length", 0)
             
             # Calcul des coins (Bas-Gauche -> Bas-Droit -> Haut-Droit -> Haut-Gauche)
-            x1, x2 = cx - w/2 - jeu, cx + w/2 + jeu
-            y1, y2 = cy - h/2 - jeu, cy + h/2 + jeu
+            x1, x2 = cx - w/2, cx + w/2
+            y1, y2 = cy - h/2, cy + h/2
             
-            pts = [(x1, y1), (x2, y1), (x2, y2), (x1, y2), (x1, y1)]
+            pts = [(x1+x_0_0, y1+y_0_0), (x2+x_0_0, y1+y_0_0), (x2+x_0_0, y2+y_0_0), (x1+x_0_0, y2+y_0_0), (x1+x_0_0, y1+y_0_0)]
             
             g.write(f"G0 X{pts[0][0]:.3f} Y{pts[0][1]:.3f} F{feedrate}\n")
             g.write(f"G1 Z{z_down} F400\n")
