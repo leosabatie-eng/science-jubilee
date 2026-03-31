@@ -8,14 +8,14 @@
     "slots": {
         "0": {
             "coordinates": [
-                10.93,
-                10.79
+                153.45,
+                194.59
             ],
             "shape": "rectangle",
-            "width": 127.76,
-            "length": 85.48,
+            "width": 85.48,
+            "length": 127.76,
             "has_labware": true,
-            "labware": "greiner_24_wellplate_3300ul_orth.json"
+            "labware": "greiner_24_wellplate_3300ul.json"
         }
     },
     "tool_slots": {}

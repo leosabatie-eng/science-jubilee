@@ -1,16 +1,64 @@
 from constants import *
+import json
+import os
+
+
+def load_labware_dims(json_filename):
+    """Charge les dimensions réelles depuis le dossier master de science-jubilee."""
+   # 1. On récupère le chemin du dossier où se trouve ce fichier (model.py)
+    # On suppose que tu es dans : .../science-jubilee/interface_graphique/
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # 2. On remonte d'un niveau pour arriver à la racine 'science-jubilee'
+    project_root = os.path.dirname(current_dir)
+    
+    # 3. On construit le chemin vers les définitions
+    # Cela donne : .../science-jubilee/src/science_jubilee/labware/labware_definition/
+    base_path = os.path.join(
+        project_root, 
+        "src", "science_jubilee", "labware", "labware_definition"
+    )
+    
+    full_path = os.path.join(base_path, json_filename)
+    
+    try:
+        with open(full_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        return data
+    except Exception as e:
+        print(f"⚠️ Erreur chargement JSON {json_filename}: {e}")
+        return None
+    
 
 class DraggableObject:
-    def __init__(self, canvas, x, y, w, h, color, name, check_collision_callback, check_inside_callback):
+    def __init__(self, canvas, x, y, json_name, color, name, check_collision_callback, check_inside_callback):
         self.canvas = canvas
         self.name = name
+        
+
+        self.data = load_labware_dims(json_name)
+        if self.data:
+            # On récupère les vraies dimensions du JSON
+            self.w_mm = self.data["dimensions"]["xDimension"]
+            self.h_mm = self.data["dimensions"]["yDimension"]
+        else:
+            self.w_mm, self.h_mm = 50, 50 # Valeurs de secours
+            
+        # Conversion immédiate pour le dessin
+        w_px = self.w_mm * MM_TO_PIX
+        h_px = self.h_mm * MM_TO_PIX
+
+
+        self.id = canvas.create_rectangle(x, y, x + w_px, y + h_px, fill=color, outline="white", width=2)
+        self.text = canvas.create_text(x + w_px/2, y + h_px/2, text=name, fill="white", font=("Arial", 10))
+        self.items = [self.id, self.text]
+
+
         self.angle = 0
         self.check_collision = check_collision_callback
         self.check_inside = check_inside_callback
 
-        self.id = canvas.create_rectangle(x, y, x + w, y + h, fill=color, outline="white", width=2)
-        self.text = canvas.create_text(x + w/2, y + h/2, text=name, fill="white", font=("Arial", 10))
-        self.items = [self.id, self.text]
+        
 
         for item in self.items:
             canvas.tag_bind(item, "<Button-1>", self.start_drag)
@@ -40,3 +88,6 @@ class DraggableObject:
         self.canvas.coords(self.id, cx - h/2, cy - w/2, cx + h/2, cy + w/2)
         self.canvas.coords(self.text, cx, cy)
         self.angle = (self.angle + 90) % 360
+
+
+    

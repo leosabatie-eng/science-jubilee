@@ -45,7 +45,7 @@ class App(ctk.CTk):
         ctk.CTkButton(self.sidebar, text="Exporter JSON", command=self.save_json, fg_color="#1976d2").pack(fill="x", pady=4)
         ctk.CTkButton(self.sidebar, text="Charger JSON", command=self.load_json).pack(fill="x", pady=4)
         ctk.CTkButton(self.sidebar, text="Plan Lazer Cut", command=lambda: exporter.export_to_dxf()).pack(fill="x", pady=4)
-        ctk.CTkButton(self.sidebar, text="Plan gcode stylo", command=lambda: exporter.json_to_gcode("test1.json", "mon_plateau.gcode")).pack(fill="x", pady=4)
+        ctk.CTkButton(self.sidebar, text="Plan gcode stylo", command=lambda: exporter.json_to_gcode("test1.json", "plan_jubilee.txt")).pack(fill="x", pady=4)
         ctk.CTkButton(self.sidebar, text="Vider plateau", command=self.clear_canvas, fg_color="#c62828").pack(fill="x", pady=4)
 
         ctk.CTkLabel(self.sidebar, text="Raccourcis:\n- Clic gauche: placer/déplacer\n- Clic droit: rotation 90°\n- Suppr: supprimer sous curseur",
@@ -107,12 +107,19 @@ class App(ctk.CTk):
         # On vérifie si un outil est sélectionné
         if self.selected_tool_name is None:
             return
+        
+        json_file = LABWARE[self.selected_tool_name]["json"]
 
-        # 1. Conversion mm → pixels
-        w_mm = LABWARE[self.selected_tool_name]["w_mm"]
-        h_mm = LABWARE[self.selected_tool_name]["h_mm"]
-        w_px = w_mm * MM_TO_PIX
-        h_px = h_mm * MM_TO_PIX
+        from models import load_labware_dims
+        data = load_labware_dims(json_file)
+        
+        if not data:
+            print(f"Erreur : Impossible de lire les dimensions de {json_file}")
+            return
+
+        # Dimensions en pixels pour les tests de collision
+        w_px = data["dimensions"]["xDimension"] * MM_TO_PIX
+        h_px = data["dimensions"]["yDimension"] * MM_TO_PIX
 
         # Calcul de la position (centré sur la souris)
         x = event.x - w_px/2
@@ -131,7 +138,7 @@ class App(ctk.CTk):
         obj = DraggableObject(
             self.canvas, 
             x, y, 
-            w_px, h_px, 
+            json_file, 
             color, 
             self.selected_tool_name, 
             self.is_free_space, 

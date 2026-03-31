@@ -202,7 +202,7 @@ def export_to_dxf(json_file="test1.json"):
 
 
 #tracer plan avec stylo
-def json_to_gcode(json_file, gcode_file, z_up=30.0, z_down=27.0, feedrate=2000):
+def json_to_gcode(json_file, gcode_file, z_up=30.0, z_down=27.0, feedrate=4000):
     try:
         with open(json_file, "r", encoding="utf-8") as f:
             data = json.load(f)
@@ -217,18 +217,33 @@ def json_to_gcode(json_file, gcode_file, z_up=30.0, z_down=27.0, feedrate=2000):
         g.write("G90 ; Positionnement absolu\n")
         g.write("G28 ; Home\n")
         g.write(f"G0 Z{z_up} F600 ; Lever le stylo\n\n")
+
+        #lock outil à enelver
+        param = "P"
+        g.write(f"G4 {param}{4000}\n")
+        #
+        #tool lock
+        g.write("G91\n")   
+        g.write("G1 U10 F6000 H0\n") 
+        g.write("G1 U200 F6000 H1\n") 
+        g.write("G90\n") 
+        #
+        
 #Z=26 limite pour ecrire
+
+      
         # --- 1) DESSIN DU CONTOUR (PLATEAU) ---
         # On dessine le rectangle extérieur
         x_0_0 = -4
         y_0_0 = -43.5
+        offset_stylo = 2
         points_contour = [#coin 0,0 -> -4;-43.5
-            (x_0_0, y_0_0), (PLATEAU_W_MM + x_0_0, y_0_0), 
-            (PLATEAU_W_MM + x_0_0, PLATEAU_H_MM + y_0_0), (x_0_0, PLATEAU_H_MM + y_0_0), (x_0_0, y_0_0)
+            (x_0_0 + offset_stylo, y_0_0 + offset_stylo), (PLATEAU_W_MM + x_0_0 - offset_stylo, y_0_0 + offset_stylo), 
+            (PLATEAU_W_MM + x_0_0 - offset_stylo, PLATEAU_H_MM + y_0_0 - offset_stylo), (x_0_0 + offset_stylo, PLATEAU_H_MM + y_0_0 - offset_stylo), (x_0_0 + offset_stylo, y_0_0 + offset_stylo)
         ]
         g.write("; --- Contour Plateau ---\n")
         g.write(f"G0 X{points_contour[0][0]} Y{points_contour[0][1]} F{feedrate}\n")
-        g.write(f"G1 Z{z_down} F400\n")
+        g.write(f"G1 Z{z_down} F800\n")
         for x, y in points_contour[1:]:
             g.write(f"G1 X{x:.3f} Y{y:.3f}\n")
         g.write(f"G1 Z{z_up} F600\n\n")
@@ -236,7 +251,7 @@ def json_to_gcode(json_file, gcode_file, z_up=30.0, z_down=27.0, feedrate=2000):
         # --- 2) TROUS DE FIXATION (CERCLES) --
         g.write("; --- Trous de Fixation ---\n")
         r_hole = DIAMETRE_TROU / 2
-        trous_pos = [
+        trous_pos =[ #position des trous pas logique, difference entre réeel et code, pour moi ca fonctionne comme ca 
             (OFFSET_TROU_LEFT_Y + x_0_0, -OFFSET_TROU_LEFT_X + y_0_0),
             (PLATEAU_H_MM - OFFSET_TROU_LEFT_Y + x_0_0, - OFFSET_TROU_LEFT_X + y_0_0),
             (PLATEAU_W_MM - OFFSET_TROU_RIGHT_Y + x_0_0, PLATEAU_H_MM + OFFSET_TROU_RIGHT_X + y_0_0),
@@ -246,7 +261,7 @@ def json_to_gcode(json_file, gcode_file, z_up=30.0, z_down=27.0, feedrate=2000):
         for tx, ty in trous_pos:
             # Aller au bord du cercle
             g.write(f"G0 X{tx + r_hole:.3f} Y{ty:.3f} F{feedrate}\n")
-            g.write(f"G1 Z{z_down} F400\n")
+            g.write(f"G1 Z{z_down} F800\n")
             # Approximation du cercle en 32 segments
             for i in range(1, 33):
                 angle = math.radians(i * (360/32))
@@ -262,23 +277,23 @@ def json_to_gcode(json_file, gcode_file, z_up=30.0, z_down=27.0, feedrate=2000):
         for slot in slots.values():
             if not slot.get("has_labware", False): continue
             
-            cx, cy = slot["coordinates"]
+            x1, y1 = slot["coordinates"]
             w, h = slot.get("width", 0), slot.get("length", 0)
             
             # Calcul des coins (Bas-Gauche -> Bas-Droit -> Haut-Droit -> Haut-Gauche)
-            x1, x2 = cx - w/2, cx + w/2
-            y1, y2 = cy - h/2, cy + h/2
+            x2 = x1 + h
+            y2 = y1 + w
             
             pts = [(x1+x_0_0, y1+y_0_0), (x2+x_0_0, y1+y_0_0), (x2+x_0_0, y2+y_0_0), (x1+x_0_0, y2+y_0_0), (x1+x_0_0, y1+y_0_0)]
             
             g.write(f"G0 X{pts[0][0]:.3f} Y{pts[0][1]:.3f} F{feedrate}\n")
-            g.write(f"G1 Z{z_down} F400\n")
+            g.write(f"G1 Z{z_down} F800\n")
             for px, py in pts[1:]:
                 g.write(f"G1 X{px:.3f} Y{py:.3f}\n")
             g.write(f"G1 Z{z_up} F600\n\n")
 
         # --- FIN ---
-        g.write("G1 Z20 F600 ; Monter haut\n")
+        #g.write("G1 Z20 F600 ; Monter haut\n")
         g.write("G28 X0 Y0 ; Parking\n")
         g.write("M84 ; Stop moteurs\n")
 

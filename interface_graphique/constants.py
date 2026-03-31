@@ -1,9 +1,10 @@
+
 # Dimensions et conversions
 MM_TO_PIX = 3 
 PLATEAU_W_MM = 305
 PLATEAU_H_MM = 305
 DIAMETRE_TROU = 3
-OFFSET_TROU_RIGHT_Y = 15.39
+OFFSET_TROU_RIGHT_Y = 15.39#mettre à jour nom
 OFFSET_TROU_RIGHT_X = 5
 OFFSET_TROU_LEFT_Y = 5
 OFFSET_TROU_LEFT_X = 1.5
@@ -32,8 +33,11 @@ OUTIL_SLOTS = {
 
 OUTILS_LISTE = ["None", "Pipette", "Inoculator", "Fluo", "Other"]
 
+PATH_LABWARE = "science-jubilee/src/science_jubilee/labware/labware_definition"
+
+
 LABWARE = {
-    "Plaque 24 puits": {"w_mm": 127.76, "h_mm": 85.48, "json": "greiner_24_wellplate_3300ul_orth.json"},
+    "Plaque 24 puits": {"w_mm": 85.48, "h_mm": 127.76, "json": "greiner_24_wellplate_3300ul.json"},
     "Réservoir eau": {"w_mm": 50, "h_mm": 30, "json": "pot_de_d'eau.json"},
     "Réservoir lentilles": {"w_mm": 80, "h_mm": 80, "json": "agilent_1_reservoir_290ml.json"}#d = 80 et z = 90
 }
