@@ -90,3 +90,35 @@ def load_all(jm: JubileeManager, deck_filename: str, path: Optional[str] = None)
         slot_obj.labware = labware
 
     
+def execute_plan(deck_filename, path=None, jm=None):
+    """
+    Lit un fichier .txt et exécute les commandes via le contrôleur Jubilee.
+    """
+    if jm is None:
+        raise ValueError("❌ Tu dois passer l'objet 'jm' à la fonction (ex: execute_plan('nom', jm=jm))")
+
+    if path is None:
+        path = os.path.join(os.path.dirname(__file__), "deck_definition")
+        
+    if not deck_filename.endswith(".txt"):
+        deck_filename += ".txt"
+        
+    config_path = os.path.join(path, deck_filename)
+    
+    if not os.path.exists(config_path):
+        print(f"❌ Fichier introuvable : {config_path}")
+        return
+
+    print(f"🚀 Exécution du plan Jubilee : {deck_filename}")
+    
+    with open(config_path, "r", encoding="utf-8") as f:
+        for ligne in f:
+            commande = ligne.strip()
+            if not commande or commande.startswith(';'):
+                continue
+            
+            # Au lieu de ser.write, on envoie la ligne brute au contrôleur Jubilee
+            # La méthode gcode() de Jubilee envoie la commande et attend le 'ok'
+            jm.controller.gcode(commande)
+            
+    print("✅ Plan terminé avec succès sur Jubilee.")
