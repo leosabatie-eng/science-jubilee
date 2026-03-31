@@ -89,5 +89,7 @@ class DraggableObject:
         self.canvas.coords(self.text, cx, cy)
         self.angle = (self.angle + 90) % 360
 
+        self.w_mm, self.h_mm = self.h_mm, self.w_mm#echanger w et h pour la rotation (x et y)
+
 
     
