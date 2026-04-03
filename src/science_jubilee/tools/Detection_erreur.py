@@ -113,5 +113,3 @@ class Detection_erreur:
         else:
             print("❌ Pas de lentille dans ton image")
             return False
-        
-    detect_lens()
