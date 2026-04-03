@@ -3,6 +3,15 @@ import ezdxf
 import math
 from constants import *
 
+# exporter.py (Ajout)
+def export_led_pattern(light_data, filename="pattern_lumiere.json"):
+    """Exporte les 24 valeurs des LEDs pour l'ESP32"""
+    pattern = {str(k): v for k, v in light_data.items()}
+    data = {"pattern": pattern}
+    with open(filename, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4)
+    print(f"✅ Pattern LED exporté -> {filename}")
+    
 def export_layout(placed_objects, slot_assignments, canvas, canvas_plateau, filename="test1.json"):
     x0_px, y0_px, x1_px, y1_px = canvas.coords(canvas_plateau)
     plateau_w_px = x1_px - x0_px
@@ -215,7 +224,6 @@ def json_to_gcode(json_file, gcode_file, z_up=30.0, z_down=27.0, feedrate=4000):
         g.write("; G-code genere directement depuis JSON\n")
         g.write("G21 ; Unites en mm\n")
         g.write("G90 ; Positionnement absolu\n")
-        g.write("G28 ; Home\n")
         g.write(f"G0 Z{z_up} F600 ; Lever le stylo\n\n")
 
         #lock outil à enelver
