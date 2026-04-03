@@ -8,15 +8,28 @@
     "slots": {
         "0": {
             "coordinates": [
-                153.45,
-                194.59
+                10.59,
+                10.79
             ],
             "shape": "rectangle",
-            "width": 85.48,
-            "length": 127.76,
+            "width": 127.76,
+            "length": 85.48,
             "has_labware": true,
             "labware": "greiner_24_wellplate_3300ul.json"
+        },
+        "1": {
+            "coordinates": [
+                209.21,
+                10.12
+            ],
+            "shape": "rectangle",
+            "width": 127.76,
+            "length": 85.57,
+            "has_labware": true,
+            "labware": "agilent_1_reservoir_290ml.json"
         }
     },
-    "tool_slots": {}
+    "tool_slots": {
+        "0": "Inoculator"
+    }
 }

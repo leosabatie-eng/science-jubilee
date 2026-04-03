@@ -85,8 +85,8 @@ class Loop(Tool):
             warnings.warn("Warning: Uneven source & destination wells specified.")
 
         source_destination_pairs = list(zip(source, destination))
-        z_safe_dest = 28
-        z_safe_source = 85
+        z_safe_dest = 68 #z pour depot = 53
+        z_safe_source = 94
         for source_well, destination_well in source_destination_pairs:
             xs, ys, zs = self._get_xyz(well=source_well)
             if (
@@ -101,7 +101,7 @@ class Loop(Tool):
 
             self._machine.move_to(z=150) # Remonte à 80mm au lieu d'appeler safe_z
             self._machine.move_to(x=xs, y=ys)
-            self._machine.move_to(z=zs + z_safe_source)
+            self._machine.move_to(z= z_safe_source)#rajouter zs?
             # slowly sweep in the reservoir to pick up duckweed
             # can tune these default values
             self._machine.move(dx=sweep_x*3, s=sweep_speed*2)
@@ -112,7 +112,7 @@ class Loop(Tool):
 
             self._machine.move_to(z=150) # Remonte à 80mm au lieu d'appeler safe_z
             self._machine.move_to(x=xd, y=yd)
-            self._machine.move_to(z=zd + z_safe_dest)
+            self._machine.move_to(z=z_safe_dest)#rajouter zd ?
             # sweep again to drop off duckweed
             # make smaller movements and move opposite direction
             self._machine.move(dx=sweep_x / 2, s=sweep_speed)
@@ -121,6 +121,7 @@ class Loop(Tool):
 
             self.current_well = destination_well
             # self._dispense(vol, s=s)
+            self._machine.move_to(z=150)
 
     @staticmethod
     def _get_xyz(well: Well = None, location: Tuple[float] = None):

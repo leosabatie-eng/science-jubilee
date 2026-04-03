@@ -1,20 +1,20 @@
 ; G-code genere directement depuis JSON
 G21 ; Unites en mm
 G90 ; Positionnement absolu
+G28 ; Home
 G0 Z30.0 F600 ; Lever le stylo
 
-G4 P4000
-G91
-G1 U10 F6000 H0
-G1 U200 F6000 H1
-G90
+; Appel de la macro de changement d'outil
+pickup_tool1 ; Commande personnalisée pour prendre l'outil 1
+G4 P500 ; Pause de 500ms pour stabilisation (optionnel)
+
 ; --- Contour Plateau ---
-G0 X-2 Y-41.5 F4000
+G0 X-4 Y-43.5 F4000
 G1 Z27.0 F800
-G1 X299.000 Y-41.500
-G1 X299.000 Y259.500
-G1 X-2.000 Y259.500
-G1 X-2.000 Y-41.500
+G1 X301.000 Y-43.500
+G1 X301.000 Y261.500
+G1 X-4.000 Y261.500
+G1 X-4.000 Y-43.500
 G1 Z30.0 F600
 
 ; --- Trous de Fixation ---
@@ -163,21 +163,14 @@ G1 X12.890 Y266.500
 G1 Z30.0 F600
 
 ; --- Labwares ---
-G0 X6.590 Y-32.710 F4000
+G0 X-57.620 Y-74.120 F4000
 G1 Z27.0 F800
-G1 X92.070 Y-32.710
-G1 X92.070 Y95.050
-G1 X6.590 Y95.050
-G1 X6.590 Y-32.710
+G1 X70.140 Y-74.120
+G1 X70.140 Y11.360
+G1 X-57.620 Y11.360
+G1 X-57.620 Y-74.120
 G1 Z30.0 F600
 
-G0 X205.210 Y-33.380 F4000
-G1 Z27.0 F800
-G1 X290.780 Y-33.380
-G1 X290.780 Y94.380
-G1 X205.210 Y94.380
-G1 X205.210 Y-33.380
-G1 Z30.0 F600
-
+G1 Z20 F600 ; Monter haut
 G28 X0 Y0 ; Parking
 M84 ; Stop moteurs
