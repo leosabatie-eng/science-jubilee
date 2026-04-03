@@ -15,12 +15,13 @@
             "width": 127.76,
             "length": 85.48,
             "has_labware": true,
-            "labware": "greiner_24_wellplate_3300ul.json"
+            "labware": "greiner_24_wellplate_3300ul_orth.json"
         },
         "1": {
             "coordinates": [
                 209.21,
                 10.12
+ 
             ],
             "shape": "rectangle",
             "width": 127.76,
