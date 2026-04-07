@@ -9,6 +9,7 @@ The primary goal is to allow users (engineers and technicians) to:
 * **Assign scientific tools** to specific slots.
 * **Generate structured JSON files** for machine automation.
 * **Export DXF files** for the physical fabrication of custom mounting plates.
+* **Export G-code (.txt)** to physically trace the layout on the machine.
 
 ---
 
@@ -56,11 +57,10 @@ It guarantees a 1:1 correspondence between the digital design and the physical i
 * **Data Sanitization:** Automatically converts `"None"` selection to `null` during JSON export for software compatibility.
 * **Modular approach:** Clear separation between labware (on-deck) and tools (off-deck).
 
-### 4️⃣ JSON Export
-The generated file acts as the "Source of Truth" for the experiment, containing:
-* Deck dimensions and metadata.
-* Precise $X, Y, Z$ coordinates for all placed labware.
-* Assigned tools per parking slot.
+### 4️⃣ JSON Export & Fabrication
+* **JSON Export:** Generates the "Source of Truth" for machine automation.
+* **DXF Export:** Professional file for laser cutting or CNC milling a custom plate.
+* **G-code Trace (.txt):** Generates a G-code file that allows the Jubilee to physically trace the outlines of the labwares on the bed (using a pen tool), ensuring the physical setup matches the digital design.
 
 ### 5️⃣ DXF Export
 Generates a professional DXF file for manufacturing a physical plate:
@@ -79,6 +79,20 @@ Generates a professional DXF file for manufacturing a physical plate:
     * **Display:** Canvas rendering and user events.
     * **Business Logic:** Unit conversion, collision rules, and dimension management.
     * **Export Modules:** Formatting data for JSON and DXF standards.
+
+---
+
+## 🚀 How to Run (Execution)
+
+To launch the graphical interface, follow these steps:
+
+1. **Open your terminal** (Command Prompt, PowerShell, or Bash).
+2. **Navigate to the project directory** (where `main.py` is located):
+   ```bash
+   cd path/to/science-jubilee/interface_graphique
+3. **Execute the script:**
+   ```bash
+   python main.py
 
 ---
 
