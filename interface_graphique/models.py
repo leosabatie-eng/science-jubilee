@@ -45,8 +45,8 @@ class DraggableObject:
             self.w_mm, self.h_mm = 50, 50 # Valeurs de secours
             
         # Conversion immédiate pour le dessin
-        w_px = self.w_mm * MM_TO_PIX
-        h_px = self.h_mm * MM_TO_PIX
+        w_px = self.h_mm * MM_TO_PIX #inverser h et w pour bon affichage sur l'interface, donc a corriger das le code
+        h_px = self.w_mm * MM_TO_PIX
 
 
         self.id = canvas.create_rectangle(x, y, x + w_px, y + h_px, fill=color, outline="white", width=2)

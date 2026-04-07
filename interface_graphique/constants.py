@@ -33,7 +33,7 @@ OUTIL_SLOTS = {
     4: {"x": 200, "y": 700},
 }
 
-OUTILS_LISTE = ["None", "Pipette", "Inoculator", "Fluo", "Other"]
+OUTILS_LISTE = ["None", "Pipette", "Inoculator", "Fluo", "stylo", "Other"]
 
 PATH_LABWARE = "science-jubilee/src/science_jubilee/labware/labware_definition"
 
