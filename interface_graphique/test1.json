@@ -8,8 +8,8 @@
     "slots": {
         "0": {
             "coordinates": [
-                10.59,
-                10.79
+                54.26,
+                85.12
             ],
             "shape": "rectangle",
             "width": 127.76,
@@ -19,9 +19,8 @@
         },
         "1": {
             "coordinates": [
-                209.21,
-                10.12
- 
+                162.55,
+                85.12
             ],
             "shape": "rectangle",
             "width": 127.76,

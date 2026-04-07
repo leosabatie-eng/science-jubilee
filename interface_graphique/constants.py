@@ -39,7 +39,7 @@ PATH_LABWARE = "science-jubilee/src/science_jubilee/labware/labware_definition"
 
 
 LABWARE = {
-    "Plaque 24 puits": {"w_mm": 85.48, "h_mm": 127.76, "json": "greiner_24_wellplate_3300ul.json"},
+    "Plaque 24 puits": {"w_mm": 127.76, "h_mm": 85.48, "json": "greiner_24_wellplate_3300ul_orth.json"},
     "Réservoir eau": {"w_mm": 50, "h_mm": 30, "json": "pot_de_d'eau.json"},
     "Réservoir lentilles": {"w_mm": 80, "h_mm": 80, "json": "agilent_1_reservoir_290ml.json"}#d = 80 et z = 90
 }

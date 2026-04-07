@@ -301,8 +301,5 @@ def json_to_gcode(json_file, gcode_file, z_up=30.0, z_down=20.0, feedrate=4000):
             g.write(f"G1 Z{z_up} F600\n\n")
 
         # --- FIN ---
-        #g.write("G1 Z20 F600 ; Monter haut\n")
-        g.write("G28 X0 Y0 ; Parking\n")
-        g.write("M84 ; Stop moteurs\n")
 
     print(f"G-code généré : {gcode_file}")
