@@ -8,8 +8,8 @@
     "slots": {
         "0": {
             "coordinates": [
-                54.26,
-                85.12
+                48.45,
+                95.26
             ],
             "shape": "rectangle",
             "width": 127.76,
@@ -19,17 +19,30 @@
         },
         "1": {
             "coordinates": [
-                162.55,
-                85.12
+                165.75,
+                52.75
             ],
             "shape": "rectangle",
-            "width": 127.76,
-            "length": 85.57,
+            "width": 82.5,
+            "length": 82.5,
             "has_labware": true,
-            "labware": "agilent_1_reservoir_290ml.json"
+            "labware": "pot_de_d'eau.json"
+        },
+        "2": {
+            "coordinates": [
+                167.08,
+                193.75
+            ],
+            "shape": "rectangle",
+            "width": 82.5,
+            "length": 82.5,
+            "has_labware": true,
+            "labware": "pot_duckweed.json"
         }
     },
     "tool_slots": {
-        "0": "Inoculator"
+        "0": "Inoculator",
+        "1": "Pipette",
+        "2": "stylo"
     }
 }

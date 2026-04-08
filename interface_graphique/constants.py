@@ -27,10 +27,10 @@ TAGS_PROTEGES = {
 }
 
 OUTIL_SLOTS = {
-    1: {"x": 200, "y": 100},
-    2: {"x": 200, "y": 300},
-    3: {"x": 200, "y": 500},
-    4: {"x": 200, "y": 700},
+    1: {"x": 200, "y": 700},
+    2: {"x": 200, "y": 500},
+    3: {"x": 200, "y": 300},
+    4: {"x": 200, "y": 100},
 }
 
 OUTILS_LISTE = ["None", "Pipette", "Inoculator", "Fluo", "stylo", "Other"]
@@ -41,5 +41,5 @@ PATH_LABWARE = "science-jubilee/src/science_jubilee/labware/labware_definition"
 LABWARE = {
     "Plaque 24 puits": {"w_mm": 127.76, "h_mm": 85.48, "json": "greiner_24_wellplate_3300ul_orth.json"},
     "Réservoir eau": {"w_mm": 50, "h_mm": 30, "json": "pot_de_d'eau.json"},
-    "Réservoir lentilles": {"w_mm": 80, "h_mm": 80, "json": "agilent_1_reservoir_290ml.json"}#d = 80 et z = 90
+    "Réservoir lentilles": {"w_mm": 80, "h_mm": 80, "json": "pot_duckweed.json"}
 }

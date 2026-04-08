@@ -236,8 +236,7 @@ def json_to_gcode(json_file, gcode_file, z_up=30.0, z_down=20.0, feedrate=4000):
         g.write("G1 U200 F6000 H1\n") 
         g.write("G90\n") 
         #
-        
-#Z=26 limite pour ecrire
+
 
       
         # --- 1) DESSIN DU CONTOUR (PLATEAU) ---

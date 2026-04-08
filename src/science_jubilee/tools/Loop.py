@@ -121,7 +121,7 @@ class Loop(Tool):
 
             self.current_well = destination_well
             # self._dispense(vol, s=s)
-            self._machine.move_to(z=200)
+            #self._machine.move_to(z=200)
 
     @staticmethod
     def _get_xyz(well: Well = None, location: Tuple[float] = None):
