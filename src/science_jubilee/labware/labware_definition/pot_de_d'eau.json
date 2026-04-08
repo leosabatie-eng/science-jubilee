@@ -2,11 +2,10 @@
   "ordering": [["A1"]],
   "brand": {
     "brand": "Agilent",
-    "brandId": ["201252-100"],
-    "links": ["https://www.agilent.com/store/en_US/Prod-201252-100/201252-100"]
+    "brandId": ["201252-100"]
   },
   "metadata": {
-    "displayName": "Agilent 1 Well Reservoir 290 mL",
+    "displayName": "pot d'eau",
     "displayCategory": "reservoir",
     "displayVolumeUnits": "mL",
     "tags": []
@@ -22,8 +21,8 @@
       "shape": "rectangular",
       "diameter": 12,
       "totalLiquidVolume": 290000,
-      "x": 63.88,
-      "y": 42.785,
+      "x": 41.25,
+      "y": 41.25,
       "z": 4.82
     }
   },
@@ -39,7 +38,7 @@
     "format": "trough",
     "isTiprack": false,
     "isMagneticModuleCompatible": false,
-    "loadName": "agilent_1_reservoir_290ml",
+    "loadName": "pot_de_d'eau",
     "quirks": ["centerMultichannelOnWells", "touchTipDisabled"]
   },
   "namespace": "opentrons",
