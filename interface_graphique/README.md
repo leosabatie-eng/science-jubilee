@@ -96,6 +96,17 @@ To launch the graphical interface, follow these steps:
 
 ---
 
+To ensure the interface loads and saves configurations correctly, you must verify that the following files are located in the correct directory:
+
+Files: plan_jubilee.json and test1.json
+
+Target Directory: science-jubilee/src/science_jubilee/decks/deck_definitions/
+
+[!IMPORTANT]
+The software looks for these specific paths to initialize the deck layout and tool positions. If these files are missing or in the wrong folder, the interface may fail to load the default workspace.
+
+---
+
 ## 📦 Dependencies
 
 To run the interface, ensure the following libraries are installed:
