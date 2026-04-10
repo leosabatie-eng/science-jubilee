@@ -22,7 +22,6 @@ class Detection_erreur:
 
     def capture_octopi_image(
         url=f"http://{OCTOPI_IP}/webcam/?action=snapshot",
-        output_file=None
     ):
         """
         Capture une image depuis le flux webcam OctoPi et la sauvegarde localement.
@@ -31,9 +30,6 @@ class Detection_erreur:
         ----------
         url : str
             URL de snapshot du serveur OctoPi.
-        
-        output_file : str
-            Nom du fichier de sortie. Si None, un nom par défaut est utilisé.
 
         Retour :
         -------
@@ -44,10 +40,8 @@ class Detection_erreur:
         Gère les erreurs réseau (timeout, connexion impossible, etc.)
         """
 
-        # Génération d'un nom de fichier par défaut si non fourni
-        if output_file is None:
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            output_file = f"lens_picture.jpg"  # TODO: adapter selon logique métier
+        # Génération d'un nom de fichier par défaut    
+        output_file = f"lens_picture.jpg"
 
         try:
             print("Connexion à OctoPi...")
