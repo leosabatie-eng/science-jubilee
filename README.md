@@ -65,7 +65,15 @@ pipette = Pipette(<index>, <name>, <tip_rack>, <config_file>)  # instantiate you
 m.load_tool(pipette)                                           # configure the pipette for use on the machine
 ...
 ```
+---
 
+## 🔗 Additional Modules (2026 Extensions)
+These specialized repositories have been developed this year to extend the core functionality of Science-Jubilee:
+
+* **[Syringe Tool Module](https://github.com/Nicolas5u/Projet_industriel.git)** : 💉 Precision liquid handling and automated dispensing using customized syringe drivers.
+* **[LED Matrix Control](github rayan)** : 💡 ESP32/PCA9685 integration for individual well-plate illumination and light-pattern protocols.
+* **[Duckweed Detection Vision](https://github.com/Sworkyx/Jubilee_Camera_detection_lentille)** : 🌿 Computer vision pipeline for automated detection, counting, and health monitoring of duckweed (*Lemna minor*).
+---
 
 <!-- pyscaffold-notes -->
 
