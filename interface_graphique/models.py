@@ -1,19 +1,34 @@
+"""
+=========================================================================================
+Projet      : Science-Jubilee
+Fichier     : model.py
+Auteur      : [SABATIÉ Léo / Projet industriel ROB4]
+Date        : 10 Avril 2026
+Description : Gestion des objets interactifs (Labware) sur le plateau.
+              Inclut le chargement dynamique des dimensions depuis les définitions JSON
+              et la gestion des événements de drag-and-drop et rotation.
+=========================================================================================
+"""
+
 from constants import *
 import json
 import os
 
-
 def load_labware_dims(json_filename):
-    """Charge les dimensions réelles depuis le dossier master de science-jubilee."""
-   # 1. On récupère le chemin du dossier où se trouve ce fichier (model.py)
-    # On suppose que tu es dans : .../science-jubilee/interface_graphique/
+    """
+    Localise et charge les dimensions réelles d'un labware depuis l'arborescence Jubilee.
+    
+    Args:
+        json_filename (str): Nom du fichier de définition (ex: 'greiner_24_wellplate.json').
+    
+    Returns:
+        dict: Contenu complet du JSON ou None en cas d'erreur.
+    """
+    # 1. Résolution du chemin absolu pour garantir le fonctionnement multi-OS
     current_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(current_dir) # Remonte à la racine 'science-jubilee'
     
-    # 2. On remonte d'un niveau pour arriver à la racine 'science-jubilee'
-    project_root = os.path.dirname(current_dir)
-    
-    # 3. On construit le chemin vers les définitions
-    # Cela donne : .../science-jubilee/src/science_jubilee/labware/labware_definition/
+    # 2. Construction du chemin vers le dossier master des définitions labware
     base_path = os.path.join(
         project_root, 
         "src", "science_jubilee", "labware", "labware_definition"
@@ -26,70 +41,109 @@ def load_labware_dims(json_filename):
             data = json.load(f)
         return data
     except Exception as e:
-        print(f"⚠️ Erreur chargement JSON {json_filename}: {e}")
+        print(f"⚠️ Alerte : Impossible de charger {json_filename}. Erreur: {e}")
         return None
-    
+
 
 class DraggableObject:
+    """
+    Représente un labware interactif sur le canvas.
+    Gère les collisions, le déplacement à la souris et la rotation à 90°.
+    """
+
     def __init__(self, canvas, x, y, json_name, color, name, check_collision_callback, check_inside_callback):
+        """
+        Initialise l'objet graphique et charge ses propriétés physiques.
+        
+        Args:
+            canvas (tk.Canvas): Support de dessin.
+            x, y (int): Coordonnées initiales en pixels.
+            json_name (str): Clé pour le fichier de définition.
+            color (str): Couleur de remplissage.
+            name (str): Label affiché sur l'objet.
+            check_collision_callback (func): Fonction de validation des collisions.
+            check_inside_callback (func): Fonction de validation des limites du plateau.
+        """
         self.canvas = canvas
         self.name = name
+        self.angle = 0 # État initial de la rotation
         
-
+        # 1. Chargement des données techniques
         self.data = load_labware_dims(json_name)
+        
         if self.data:
-            # On récupère les vraies dimensions du JSON
+            # Récupération des dimensions réelles (mm)
             self.w_mm = self.data["dimensions"]["xDimension"]
             self.h_mm = self.data["dimensions"]["yDimension"]
         else:
-            self.w_mm, self.h_mm = 50, 50 # Valeurs de secours
+            # Valeurs par défaut si le fichier est introuvable
+            self.w_mm, self.h_mm = 50, 50 
             
-        # Conversion immédiate pour le dessin
-        w_px = self.h_mm * MM_TO_PIX #inverser h et w pour bon affichage sur l'interface, donc a corriger das le code
+        # 2. Conversion pour l'affichage (Inversion Axe X/Y pour correspondre au rendu Jubilee)
+        # Note : Jubilee utilise X pour la longueur et Y pour la largeur.
+        w_px = self.h_mm * MM_TO_PIX 
         h_px = self.w_mm * MM_TO_PIX
 
-
-        self.id = canvas.create_rectangle(x, y, x + w_px, y + h_px, fill=color, outline="white", width=2)
-        self.text = canvas.create_text(x + w_px/2, y + h_px/2, text=name, fill="white", font=("Arial", 10))
+        # 3. Création des composants graphiques
+        self.id = canvas.create_rectangle(x, y, x + w_px, y + h_px, 
+                                          fill=color, outline="white", width=2)
+        
+        self.text = canvas.create_text(x + w_px/2, y + h_px/2, 
+                                       text=name, fill="white", font=("Arial", 10))
+        
         self.items = [self.id, self.text]
 
-
-        self.angle = 0
+        # 4. Callbacks de validation
         self.check_collision = check_collision_callback
         self.check_inside = check_inside_callback
 
-        
-
+        # 5. Liaison des événements (Binding)
         for item in self.items:
             canvas.tag_bind(item, "<Button-1>", self.start_drag)
             canvas.tag_bind(item, "<B1-Motion>", self.do_drag)
             canvas.tag_bind(item, "<Button-3>", self.rotate)
 
     def start_drag(self, event):
+        """Mémorise la position initiale du clic pour le calcul du delta."""
         self.start_x = event.x
         self.start_y = event.y
 
     def do_drag(self, event):
+        """Calcule le déplacement et applique le mouvement si validé par les contraintes."""
         dx = event.x - self.start_x
         dy = event.y - self.start_y
+        
+        # Coordonnées actuelles de la bounding box
         x1, y1, x2, y2 = self.canvas.coords(self.id)
         w, h = x2 - x1, y2 - y1
 
-        if self.check_inside(x1 + dx, y1 + dy, w, h) and self.check_collision(x1 + dx, y1 + dy, w, h, ignore_id=self.id):
+        # Validation du mouvement (Limites plateau ET collisions avec autres objets)
+        if self.check_inside(x1 + dx, y1 + dy, w, h) and \
+           self.check_collision(x1 + dx, y1 + dy, w, h, ignore_id=self.id):
+            
             for item in self.items:
                 self.canvas.move(item, dx, dy)
+                
             self.start_x = event.x
             self.start_y = event.y
 
     def rotate(self, event):
+        """
+        Bascule l'orientation de l'objet (90°). 
+        Met à jour la géométrie sur le canvas et les métadonnées physiques.
+        """
         x1, y1, x2, y2 = self.canvas.coords(self.id)
         w, h = x2 - x1, y2 - y1
+        
+        # Calcul du centre pour une rotation fixe
         cx, cy = x1 + w/2, y1 + h/2
+        
+        # Mise à jour graphique : inversion largeur/hauteur
         self.canvas.coords(self.id, cx - h/2, cy - w/2, cx + h/2, cy + w/2)
         self.canvas.coords(self.text, cx, cy)
+        
+        # Mise à jour de l'état logique
         self.angle = (self.angle + 90) % 360
-
-        self.w_mm, self.h_mm = self.h_mm, self.w_mm#echanger w et h pour la rotation (x et y)
-
-
-    
+        
+        # Échange des dimensions physiques pour la cohérence lors de l'export
+        self.w_mm, self.h_mm = self.h_mm, self.w_mm
