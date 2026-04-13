@@ -1,5 +1,7 @@
 # 🖥️ Graphical User Interface – Jubilee Layout Designer
 
+<img width="1920" height="1020" alt="image" src="https://github.com/user-attachments/assets/b9f23d3c-060a-4648-8b81-c446124a8f5e" />
+
 ## 📌 Description
 
 This module contains the graphical user interface (GUI) designed to create and manage experimental layouts on the Jubilee machine bed. 
