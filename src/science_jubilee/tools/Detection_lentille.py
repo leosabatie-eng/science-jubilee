@@ -7,7 +7,7 @@ from datetime import datetime
 OCTOPI_IP = "___IP_OCTOPI___"  # ex: "192.168.X.X"
 
 
-class Detection_erreur:
+class Detection_lentille:
     """
     Classe de détection d'erreurs basée sur l'analyse d'images issues d'un système OctoPi.
     
