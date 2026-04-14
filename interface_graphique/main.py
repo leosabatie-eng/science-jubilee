@@ -316,27 +316,35 @@ class App(ctk.CTk):
         exporter.export_layout(self.placed_objects, self.slot_assignments, self.canvas, self.canvas_plateau)
         messagebox.showinfo("Exportation", "Configuration du deck sauvegardée.")
 
-    def load_json(self):
+    def load_json(self, json_file="experience.json"):
         """Charge une configuration existante et recrée les objets sur le canvas."""
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        project_root = os.path.abspath(os.path.join(current_dir, ".."))
+        target_dir = os.path.join(project_root, "src", "science_jubilee", "decks", "deck_definition")
+        json_path = os.path.join(target_dir, json_file)
+
         try:
-            with open("experience.json", "r", encoding="utf-8") as f:
+            with open(json_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
         except Exception as e:
-            messagebox.showerror("Erreur", f"Impossible de charger le fichier : {e}")
+            print(f"❌ Erreur lecture JSON: {e}")
             return
-        
+            
         self.clear_canvas()
         x0, y0, x1, y1 = self.canvas.coords(self.canvas_plateau)
-        scale = (x1 - x0) / PLATEAU_W_MM
-        bl_y = y0 + (y1 - y0) # Base Line Y
+        
+        # Calcul de l'échelle
+        # On utilise PLATEAU_W_MM pour l'axe horizontal (Y Jubilee)
+        # On utilise PLATEAU_H_MM pour l'axe vertical (X Jubilee)
+        scale_horizontal = (x1 - x0) / PLATEAU_W_MM
+        scale_vertical = (y1 - y0) / PLATEAU_H_MM
 
         # Recréation des Labwares
         for s in data.get("slots", {}).values():
             if not s.get("has_labware"): continue
             
-            # Repositionnement inverse (MM -> Pixels)
-            x_px = x0 + (s["coordinates"][0] * scale) - (s["width"] * scale / 2)
-            y_px = bl_y - (s["coordinates"][1] * scale) - (s["length"] * scale / 2)
+            x_px = x0 + (s["coordinates"][1] * scale_horizontal)
+            y_px = y0 + (s["coordinates"][0] * scale_vertical)
             
             # Identification du nom d'affichage
             name = next((k for k, v in LABWARE.items() if v["json"] == s["labware"]), "Labware")
@@ -345,9 +353,9 @@ class App(ctk.CTk):
                                   self.is_free_space, self.is_inside_plateau)
             self.placed_objects.append(obj)
 
-        # Recréation des Tool Slots
+        # Recréation des Tool Slots (Inchangé)
         for sid, tool in data.get("tool_slots", {}).items():
-            sid_int = int(sid) + 1 # Compensation de l'index 0-based utilisé dans l'export
+            sid_int = int(sid) + 1 
             if sid_int in self.slot_assignments:
                 self.slot_assignments[sid_int] = tool
                 self.canvas.itemconfig(self.slot_text_ids[sid_int], text=tool)
