@@ -71,6 +71,10 @@ Generates a professional DXF file for manufacturing a physical plate:
 * **Units:** Millimeters (INSUNITS = 4).
 * **Applications:** Laser cutting, CNC milling, or 3D printing custom baseplates.
 
+<img width="352" height="678" alt="image" src="https://github.com/user-attachments/assets/5fc69b44-488c-406d-b7dd-ea9661eddd13" />
+<img width="363" height="682" alt="image" src="https://github.com/user-attachments/assets/e38c2ec9-dda9-4df8-9178-ad90f0abcb83" />
+
+
 ---
 
 ## 🧠 Architecture
