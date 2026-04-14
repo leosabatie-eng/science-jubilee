@@ -64,6 +64,42 @@ It guarantees a 1:1 correspondence between the digital design and the physical i
 * **DXF Export:** Professional file for laser cutting or CNC milling a custom plate.
 * **G-code Trace (.txt):** Generates a path file containing gcode that allows the Jubilee to physically trace the outlines of the labwares on the bed (using a pen tool), ensuring the physical setup matches the digital design.
 
+```json
+{
+    "name": "Experience1",
+    "type": "SLAS",
+    "deck_offset": [
+        0.0,
+        0.0
+    ],
+    "slots": {
+        "0": {
+            "coordinates": [
+                15.12,
+                13.93
+            ],
+            "shape": "rectangle",
+            "width": 127.76,
+            "length": 85.48,
+            "has_labware": true,
+            "labware": "greiner_24_wellplate_3300ul_orth.json"
+        },
+        "1": {
+            "coordinates": [
+                160.79,
+                126.93
+            ],
+            "shape": "rectangle",
+            "width": 127.76,
+            "length": 85.48,
+            "has_labware": true,
+            "labware": "greiner_24_wellplate_3300ul_orth.json"
+        }
+    },
+    "tool_slots": {}
+}
+```
+
 ### 5️⃣ DXF Export
 Generates a professional DXF file for manufacturing a physical plate:
 * Includes an outer mounting frame with 4 corner fixation holes.
