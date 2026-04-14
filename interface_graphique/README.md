@@ -75,8 +75,8 @@ It guarantees a 1:1 correspondence between the digital design and the physical i
     "slots": {
         "0": {
             "coordinates": [
-                15.12,
-                13.93
+                16.12,
+                18.59
             ],
             "shape": "rectangle",
             "width": 127.76,
@@ -86,17 +86,32 @@ It guarantees a 1:1 correspondence between the digital design and the physical i
         },
         "1": {
             "coordinates": [
-                160.79,
-                126.93
+                96.08,
+                199.75
             ],
             "shape": "rectangle",
-            "width": 127.76,
-            "length": 85.48,
+            "width": 82.5,
+            "length": 82.5,
             "has_labware": true,
-            "labware": "greiner_24_wellplate_3300ul_orth.json"
+            "labware": "pot_de_d'eau.json"
+        },
+        "2": {
+            "coordinates": [
+                183.08,
+                49.42
+            ],
+            "shape": "rectangle",
+            "width": 82.5,
+            "length": 82.5,
+            "has_labware": true,
+            "labware": "pot_duckweed.json"
         }
     },
-    "tool_slots": {}
+    "tool_slots": {
+        "0": "stylo",
+        "2": "Inoculator",
+        "3": "Pipette"
+    }
 }
 ```
 
