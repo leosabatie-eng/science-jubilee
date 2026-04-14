@@ -1,3 +1,4 @@
+
 """
 =========================================================================================
 Projet      : Science-Jubilee
@@ -15,6 +16,7 @@ import json
 import ezdxf
 import math
 import os
+import numpy as np
 from constants import *
 
 
@@ -125,122 +127,93 @@ def export_to_dxf(json_file="experience.json"):
         print(f"❌ Erreur lecture JSON: {e}")
         return
 
-    milieu_x = PLATEAU_W_MM / 2
-    jeu = 0.25  # Tolérance d'emboîtement (mm)
+    milieu_x_dxf = PLATEAU_W_MM / 2
+    jeu = 0.5 
 
-    # Définition des segments de découpe avec intégration des offsets de contour
+    # Définition des fichiers (Le découpage se fait sur l'axe X du DXF, soit le Y Jubilee)
     parties = [
-        {
-            "name": "plan_entier.dxf", 
-            "x_min_zone": -OFFSET_CONTOUR, 
-            "x_max_zone": PLATEAU_W_MM + 2*OFFSET_CONTOUR, 
-            "offset_x": -OFFSET_CONTOUR
-        },
-        {
-            "name": "plan_left.dxf",  
-            "x_min_zone": -OFFSET_CONTOUR, 
-            "x_max_zone": milieu_x, 
-            "offset_x": -OFFSET_CONTOUR
-        },
-        {
-            "name": "plan_right.dxf", 
-            "x_min_zone": milieu_x, 
-            "x_max_zone": PLATEAU_W_MM + 2*OFFSET_CONTOUR, 
-            "offset_x": milieu_x
-        }
+        {"name": "plan_entier.dxf", "x_min": -OFFSET_CONTOUR, "x_max": PLATEAU_W_MM + 2*OFFSET_CONTOUR, "off_x": -OFFSET_CONTOUR},
+        {"name": "plan_left.dxf",  "x_min": -OFFSET_CONTOUR, "x_max": milieu_x_dxf, "off_x": -OFFSET_CONTOUR},
+        {"name": "plan_right.dxf", "x_min": milieu_x_dxf, "x_max": PLATEAU_W_MM + 2*OFFSET_CONTOUR, "off_x": milieu_x_dxf}
     ]
 
-    # Initialisation du document DXF principal (R2010 pour la compatibilité)
-    doc = ezdxf.new(dxfversion="R2010")
-    doc.header["$INSUNITS"] = 4  # Définition des unités en millimètres
-    msp = doc.modelspace()
-
-    # --- Fonctions de tracé utilitaires ---
-    def draw_rectangle(x1, y1, x2, y2, layer="default"):
-        msp.add_lwpolyline(
-            [(x1, y1), (x2, y1), (x2, y2), (x1, y2)],
-            close=True,
-            dxfattribs={"layer": layer}
-        )
-
-    def trous_de_fixation(x1, y1, x2, y2):
-        r = DIAMETRE_TROU / 2
-        trous_positions = [
-            (-OFFSET_TROU_LEFT_X, OFFSET_TROU_LEFT_Y),                                # Bas Gauche
-            (-OFFSET_TROU_LEFT_X, PLATEAU_H_MM - OFFSET_TROU_LEFT_Y),                 # Bas Droite
-            (PLATEAU_W_MM + OFFSET_TROU_RIGHT_X, OFFSET_TROU_RIGHT_Y),                # Haut Gauche
-            (PLATEAU_W_MM + OFFSET_TROU_RIGHT_X, PLATEAU_H_MM - OFFSET_TROU_RIGHT_Y)  # Haut Droite
-        ]
-        for x, y in trous_positions:
-            msp.add_circle(center=(x, y), radius=r, dxfattribs={"layer": "fixation_holes"})
-
-    # --- Tracé du plan complet ---
-    x1, y1 = 0, 0
-    x2, y2 = PLATEAU_W_MM, PLATEAU_H_MM
-
-    draw_rectangle(x1, y1-2*OFFSET_CONTOUR, x2, y2+2*OFFSET_CONTOUR, layer="plateau")
-    trous_de_fixation(x1, y1, x2, y2)
-
     slots = data.get("slots", {})
-    for slot in slots.values():
-        if not slot.get("has_labware", False):
-            continue
 
-        cx, cy = slot["coordinates"]
-        w, h = slot.get("width", 0), slot.get("length", 0)
+    def transform_jubilee_to_dxf(x_jub, y_jub):
+        """
+        Transformation par matrice/logique :
+        X_dxf = Y_jubilee (Axe vers la droite)
+        Y_dxf = PLATEAU_H_MM - X_jubilee (Axe vers le bas inversé pour monter)
+        """
+        x_dxf = y_jub
+        y_dxf = PLATEAU_H_MM - x_jub
+        return x_dxf, y_dxf
 
-        # Conversion: coordonnées du centre -> coordonnées des coins
-        lx1, ly1 = cx - w / 2, cy - h / 2
-        lx2, ly2 = cx + w / 2, cy + h / 2
-        draw_rectangle(lx1, ly1, lx2, ly2, layer="labware")
-
-    
-    # --- Tracé des sous-plans pour découpe laser ---
     for p in parties:
         doc = ezdxf.new(dxfversion="R2010")
         doc.header["$INSUNITS"] = 4 
         msp = doc.modelspace()
+        off_x = p["off_x"]
+
+        # --- 1) CONTOUR DU PLATEAU ---
+        pts_plateau_dxf = [
+            (p["x_min"], 0),
+            (p["x_max"], 0),
+            (p["x_max"], PLATEAU_H_MM),
+            (p["x_min"], PLATEAU_H_MM)
+        ]
         
-        off = p["offset_x"]
+        # On applique l'offset de fichier sur le X final
+        final_plateau = [(px - off_x, py) for px, py in pts_plateau_dxf]
+        msp.add_lwpolyline(final_plateau, close=True, dxfattribs={"layer": "plateau"})
 
-        def draw_rect(x1, y1, x2, y2, layer="default"):
-            # Application de l'offset dynamique sur l'axe X
-            pts = [(x1 - off, y1), (x2 - off, y1), (x2 - off, y2), (x1 - off, y2)]
-            msp.add_lwpolyline(pts, close=True, dxfattribs={"layer": layer})
 
-        # Contour du plateau tronqué
-        draw_rect(p["x_min_zone"], 0, p["x_max_zone"], PLATEAU_H_MM, layer="plateau")
-
-        # Trous de fixation filtrés selon la zone
+        # --- 2) TROUS DE FIXATION ---
         r = DIAMETRE_TROU / 2
         trous_positions = [
-            (-OFFSET_TROU_LEFT_X, OFFSET_TROU_LEFT_Y),
-            (-OFFSET_TROU_LEFT_X, PLATEAU_H_MM - OFFSET_TROU_LEFT_Y),
-            (PLATEAU_W_MM + OFFSET_TROU_RIGHT_X, OFFSET_TROU_RIGHT_Y),
-            (PLATEAU_W_MM + OFFSET_TROU_RIGHT_X, PLATEAU_H_MM - OFFSET_TROU_RIGHT_Y)
+            (- OFFSET_TROU_LEFT_X, OFFSET_TROU_LEFT_Y),                          # Bas Gauche
+            (- OFFSET_TROU_LEFT_X, PLATEAU_H_MM - OFFSET_TROU_LEFT_Y),           # Bas Droite
+            (PLATEAU_W_MM + OFFSET_TROU_RIGHT_X, OFFSET_TROU_RIGHT_Y),         # Haut Gauche
+            (PLATEAU_W_MM + OFFSET_TROU_RIGHT_X, PLATEAU_H_MM - OFFSET_TROU_RIGHT_Y) # Haut Droite
         ]
-        for tx, ty in trous_positions:
-            if p["x_min_zone"] <= tx <= p["x_max_zone"]:
-                msp.add_circle(center=(tx - off, ty), radius=r, dxfattribs={"layer": "fixation_holes"})
-
-        # Labwares avec clipping horizontal si chevauchement
+        for txj, tyj in trous_positions:
+            if p["x_min"] <= txj <= p["x_max"]:
+                msp.add_circle(center=(txj - off_x, tyj), radius=r, dxfattribs={"layer": "fixation_holes"})
+    
+        # --- 3) LABWARES ---
         for slot in slots.values():
             if not slot.get("has_labware", False): continue
             
-            cx, cy = slot["coordinates"]
-            w, h = slot.get("width", 0), slot.get("length", 0)
-            
-            lx1, lx2 = cx - jeu, cx + w + jeu
-            ly1, ly2 = cy - jeu, cy + h + jeu
+            cxj, cyj = slot["coordinates"]
+            wj, hj = slot.get("width", 0), slot.get("length", 0)
+            print(cxj, cyj)
 
-            # Vérification du chevauchement avec la zone active
-            if lx2 > p["x_min_zone"] and lx1 < p["x_max_zone"]:
-                draw_x1 = max(lx1, p["x_min_zone"])
-                draw_x2 = min(lx2, p["x_max_zone"])
-                draw_rect(draw_x1, ly1, draw_x2, ly2, layer="labware")
+            # Calcul des 4 coins en Jubilee autour du centre (cxj, cyj)
+            # wj est sur l'axe X (bas), hj sur l'axe Y (droite)
+            corners_jub = [
+                (cxj - jeu, cyj - jeu),
+                (cxj + hj + jeu, cyj - jeu),
+                (cxj + hj + jeu, cyj + wj + jeu),
+                (cxj - jeu, cyj + wj + jeu)
+            ]
 
+            # Transformation de chaque coin
+            pts_dxf = [transform_jubilee_to_dxf(xj, yj) for xj, yj in corners_jub]
+
+            # Vérification du clipping sur le X du DXF
+            x_min_dxf = min(pt[0] for pt in pts_dxf)
+            x_max_dxf = max(pt[0] for pt in pts_dxf)
+
+            if x_max_dxf > p["x_min"] and x_min_dxf < p["x_max"]:
+                # CLIPPING STRICT : On borne les points X pour couper net au milieu
+                final_pts = [
+                    (max(p["x_min"], min(px, p["x_max"])) - off_x, py) 
+                    for px, py in pts_dxf
+                ]
+                msp.add_lwpolyline(final_pts, close=True, dxfattribs={"layer": "labware"})
+        
         doc.saveas(p["name"])
-        print(f"✅ Export {p['name']} terminé.")
+        print(f"✅ Fichier {p['name']} généré avec succès.")
 
 
 def json_to_gcode(json_file, gcode_file, z_up=30.0, z_down=20.0, feedrate=4000):
