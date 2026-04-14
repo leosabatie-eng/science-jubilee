@@ -1,5 +1,7 @@
 # 🖥️ Graphical User Interface – Jubilee Layout Designer
 
+<img width="1920" height="1020" alt="image" src="https://github.com/user-attachments/assets/b9f23d3c-060a-4648-8b81-c446124a8f5e" />
+
 ## 📌 Description
 
 This module contains the graphical user interface (GUI) designed to create and manage experimental layouts on the Jubilee machine bed. 
@@ -60,7 +62,7 @@ It guarantees a 1:1 correspondence between the digital design and the physical i
 ### 4️⃣ JSON Export & Fabrication
 * **JSON Export:** Generates the "Source of Truth" for machine automation.
 * **DXF Export:** Professional file for laser cutting or CNC milling a custom plate.
-* **G-code Trace (.txt):** Generates a G-code file that allows the Jubilee to physically trace the outlines of the labwares on the bed (using a pen tool), ensuring the physical setup matches the digital design.
+* **G-code Trace (.txt):** Generates a path file containing gcode that allows the Jubilee to physically trace the outlines of the labwares on the bed (using a pen tool), ensuring the physical setup matches the digital design.
 
 ### 5️⃣ DXF Export
 Generates a professional DXF file for manufacturing a physical plate:
